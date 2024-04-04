@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background: #555;
+
+  color: theme('colors.orange.500');
+}
+
+button {
+  border: 1px solid currentColor;
+  display: block;
+  padding: 1rem;
+}
+
+button:active {
+  background: #000;
+}
