@@ -1,11 +1,18 @@
 <template>
     <div>
+        <div class="mx-8 mt-8 space-x-4 flex flex-row justify-end items-baseline ">
+            <span>Speed:</span>
+            <input type="number" min="50" max="300" class="bg-transparent border-orange-500 border p-2"
+                v-model="tempo" />
+            <!-- {{ tempoAsBPM }} -->
+        </div>
         <div>
             <div class="grid m-8" v-for="(track, trackIndex) in tracks" :key="trackIndex">
-
                 <div v-for="(step, stepIndex) in track.value" :key="stepIndex">
-                    <button @click="toggleStep(stepIndex, trackIndex)"
-                        :class="step.active ? 'bg-orange-500 text-black border-orange-500' : ''">
+                    <button @click="toggleStep(stepIndex, trackIndex)" :class="[
+                    step.active ? 'bg-orange-500 text-black border-orange-500' : '',
+                    stepIndex === counter % 16 ? 'playhead' : ''
+                ]">
                         {{ stepIndex }}
                     </button>
                 </div>
@@ -19,14 +26,10 @@
                 Clear
             </button>
             <button @click="randomPattern">
-                Randomise
+                Mutate
             </button>
         </div>
-        <div class="mx-8 space-x-4 flex flex-row items-baseline ">
-            <span>Speed:</span>
-            <input :on-change="playing = false" type="number" min="50" max="300"
-                class="bg-transparent border-orange-500 border p-2" v-model="tempo" />
-        </div>
+
     </div>
 </template>
 
@@ -43,7 +46,6 @@ const track_4 = ref(Array(16).fill({ active: false }))
 const tracks = [track_1, track_2, track_3, track_4]
 
 const tempo = ref(250)
-
 
 const tempoAsBPM = computed(() => {
     return Math.round(60000 / tempo.value);
@@ -83,7 +85,6 @@ const incrementCounter = () => {
         tracks.forEach((track, trackIndex) => {
             const step = track.value[counter.value]
             if (step.active) {
-                // Determine the sound ID based on trackIndex
                 let soundId: string
                 switch (trackIndex) {
                     case 0:
@@ -126,8 +127,6 @@ function setTempo(newTempo) {
     return tempo.value = newTempo;
 }
 
-
-// TODO: fix
 const randomPattern = () => {
     clearPattern() // Call clearPattern to reset the pattern
 
@@ -135,14 +134,11 @@ const randomPattern = () => {
     tracks.forEach((track, index) => {
         track.value.forEach((cell, ci) => {
             const rand = Math.random() * (ci / 10)
-            console.log((rand) < probability)
             // Check if the randomly generated number is less than the probability
-            return cell.active = (rand) < probability
+            cell.active = (rand) < probability
         });
     });
 };
-
-
 
 onUnmounted(() => {
     if (intervalId) clearInterval(intervalId)
@@ -161,5 +157,11 @@ onUnmounted(() => {
 
 button {
     @apply w-full h-full;
+}
+
+.playhead {
+    background-color: #000;
+    border-color: theme('colors.orange.500');
+    color: theme('colors.orange.500');
 }
 </style>
